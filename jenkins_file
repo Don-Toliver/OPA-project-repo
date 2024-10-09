@@ -1,0 +1,61 @@
+pipeline {
+    agent any
+    parameters {
+        booleanParam(name: 'destroy', defaultValue: false, description: 'Whether to destroy the infra components')
+        string(name: 'region', defaultValue: 'ap-south-1', description: 'Which region to deploy to')
+    }
+    environment {
+        AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY')
+        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_KEY')
+        AWS_DEFAULT_REGION = "${params.region}"
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/Kishorgujar/my-OPA_pro'
+            }
+        }
+        stage('Install dependencies') {
+            steps {
+                sh 'terraform init'
+                sh 'terraform validate'
+            }
+        }
+        stage('Terraform Plan') {
+            steps {
+                script {
+                    def planFile = 'tfplan'
+                    sh "terraform plan -out=${planFile}"
+                }
+            }
+        }
+        stage('Terraform Apply') {
+            when {
+                expression { !params.destroy }
+            }
+            steps {
+                sh "terraform apply -auto-approve tfplan"
+            }
+        }
+        stage('Terraform Destroy') {
+            when {
+                expression { params.destroy }
+            }
+            steps {
+                script {
+                    def destroyPlanFile = 'destroy_plan'
+                    sh "terraform plan -destroy -out=${destroyPlanFile}"
+                    sh "terraform apply -auto-approve ${destroyPlanFile}"
+                }
+            }
+        }
+        stage('Policy Check') {
+            steps {
+                script {
+                    sh 'opa eval --data policy.rego --input tfplan "data.example.allow"'
+                }
+            }
+        }
+    }
+}
+
