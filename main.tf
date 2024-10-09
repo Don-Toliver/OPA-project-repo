@@ -8,7 +8,7 @@ resource "aws_s3_bucket" "example" {
   # Add tags for the bucket
   tags = {
     Name        = "automation-cicd-bucket"
-    Environment = "DEV"
+    Environment = "Test"
   }
 
   # Optional: ACL settings for the bucket (private, public-read, etc.)
