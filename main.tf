@@ -11,7 +11,5 @@ resource "aws_s3_bucket" "example" {
     Environment = "Test"
   }
 
-  # Optional: ACL settings for the bucket (private, public-read, etc.)
-  acl = "private"
 }
 
