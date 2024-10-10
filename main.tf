@@ -15,7 +15,7 @@ resource "aws_s3_bucket" "example" {
  
   tags = {
     Name        = "my-secure-bucket"
-    Environment = "Test-violation-2"
+    Environment = "DEV"
   }
 }
 
