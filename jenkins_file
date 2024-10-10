@@ -32,14 +32,15 @@ pipeline {
                 script {
                     def planFile = 'tfplan'
                     sh "terraform plan -out=${planFile}"
-                    sh "terraform show -json ${planFile} > tfplan.json"
+                    sh "terraform show -json ${planFile} > tfplan.json"  // Create tfplan.json
                 }
             }
         }
         stage('Policy Check') {
             steps {
                 script {
-                    // Run the OPA evaluation against the Terraform plan and OPA policy
+                    // Add this line to see the content of tfplan.json for debugging
+                    sh "cat tfplan.json"  // Debug line to view the JSON structure
                     def policyCheck = sh(script: 'opa eval --data policy.rego --input tfplan.json "data.example.s3.violation"', returnStatus: true)
  
                     // If OPA policy violation is found, fail the build
