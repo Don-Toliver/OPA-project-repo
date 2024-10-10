@@ -29,6 +29,16 @@ pipeline {
                 }
             }
         }
+        stage('Policy Check') {
+            steps {
+                script {
+                    def policyCheck = sh(script: 'opa eval --data policy.rego --input tfplan "data.example.allow"', returnStatus: true)
+                    if (policyCheck != 0) {
+                        error("OPA policy violation detected. Failing the build.")
+                    }
+                }
+            }
+        }
         stage('Terraform Apply') {
             when {
                 expression { !params.destroy }
@@ -46,13 +56,6 @@ pipeline {
                     def destroyPlanFile = 'destroy_plan'
                     sh "terraform plan -destroy -out=${destroyPlanFile}"
                     sh "terraform apply -auto-approve ${destroyPlanFile}"
-                }
-            }
-        }
-        stage('Policy Check') {
-            steps {
-                script {
-                    sh 'opa eval --data policy.rego --input tfplan "data.example.allow"'
                 }
             }
         }
