@@ -14,10 +14,10 @@ pipeline {
         stage('Check Existing S3 Bucket') {
             steps {
                 script {
-                    def bucketExists = sh(script: 'aws s3api head-bucket --bucket automation-cicd-pro-ap-south-1-pzrctulv', returnStatus: true) == 0
+                    def bucketExists = sh(script: 'aws s3api head-bucket --bucket automation-cicd-pro-ap-south-1', returnStatus: true) == 0
                     if (bucketExists) {
                         echo "Bucket already exists. Importing into Terraform."
-                        sh 'terraform import aws_s3_bucket.example automation-cicd-pro-ap-south-1-pzrctulv'
+                        sh 'terraform import aws_s3_bucket.example automation-cicd-pro-ap-south-1'
                     } else {
                         echo "Bucket does not exist. Proceeding to create."
                     }
