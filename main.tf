@@ -7,7 +7,7 @@ resource "aws_s3_bucket" "example" {
 
   tags = {
     Name        = "my-secure-bucket-ap-south-1-cicd"
-    Environment = "Test"
+    Environment = "Test-violation"
   }
 
 }
