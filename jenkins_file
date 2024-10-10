@@ -9,15 +9,18 @@ pipeline {
         stage('Install dependencies') {
             steps {
                 sh 'terraform init'
+                sh 'curl -Lo opa https://github.com/open-policy-agent/opa/releases/latest/download/opa_linux_amd64'
+                sh 'chmod +x opa'
+                sh 'sudo mv opa /usr/local/bin/'
             }
         }
         stage('Check Existing S3 Bucket') {
             steps {
                 script {
-                    def bucketExists = sh(script: 'aws s3api head-bucket --bucket automation-cicd-pro-ap-south-1', returnStatus: true) == 0
+                    def bucketExists = sh(script: 'aws s3api head-bucket --bucket my-secure-bucket-ap-south-1-cicd', returnStatus: true) == 0
                     if (bucketExists) {
                         echo "Bucket already exists. Importing into Terraform."
-                        sh 'terraform import aws_s3_bucket.example automation-cicd-pro-ap-south-1'
+                        sh 'terraform import aws_s3_bucket.example my-secure-bucket-ap-south-1-cicd'
                     } else {
                         echo "Bucket does not exist. Proceeding to create."
                     }
@@ -29,13 +32,14 @@ pipeline {
                 script {
                     def planFile = 'tfplan'
                     sh "terraform plan -out=${planFile}"
+                    sh "terraform show -json ${planFile} > tfplan.json"
                 }
             }
         }
         stage('Policy Check') {
             steps {
                 script {
-                    def policyCheck = sh(script: 'opa eval --data policy.rego --input tfplan.json "data.example.allow"', returnStatus: true)
+                    def policyCheck = sh(script: 'opa eval --data policy.rego --input tfplan.json "data.s3.access.allow"', returnStatus: true)
                     if (policyCheck != 0) {
                         error("OPA policy violation detected. Failing the build.")
                     }
