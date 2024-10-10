@@ -1,12 +1,15 @@
-package example
-
-# Allow only the create action
+package s3.access
+ 
+# Default rule to deny all actions
+default allow = false
+ 
+# Allow all actions except for updating tags on the specified bucket
 allow {
-    input.actions[_] == "create"
+    input.action != "update_tags"
 }
-
-# Deny all other actions
+ 
+# Deny tag updates for the specific bucket
 deny {
-    input.actions[_] != "create"
+    input.action == "update_tags"
+    input.bucket == "my-secure-bucket-ap-south-1-cicd"
 }
-
