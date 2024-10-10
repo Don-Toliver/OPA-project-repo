@@ -1,5 +1,4 @@
 version: 0.2
- 
 phases:
   install:
     commands:
@@ -13,14 +12,12 @@ phases:
       - chmod +x opa
       - sudo mv opa /usr/local/bin/
       - opa version
- 
   pre_build:
     commands:
       - echo Logging in to AWS...
       - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
       - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
       - aws configure set default.region $AWS_DEFAULT_REGION
- 
   build:
     commands:
       - echo Starting Terraform...
@@ -35,7 +32,7 @@ phases:
       - cat tfplan.json
       - echo Evaluating policy with OPA...
       - |
-        opa eval --data policy.rego --input tfplan.json "data.s3.access.allow" || { 
+        opa eval --data policy.rego --input tfplan.json "data.example.s3.violation" || { 
           echo "OPA evaluation failed: Policy violation detected"; 
           exit 1; 
         }
