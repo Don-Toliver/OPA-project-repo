@@ -1,7 +1,7 @@
 package example.s3
  
 # Define the allowed tags for the S3 bucket
-allowed_tags = {"Name": "my-secure-bucket", "Environment": "Test"}
+allowed_tags = {"Name": "my-cicd-bucket-ap-south-1", "Environment": "Test-violation"}
  
 # Deny any request that attempts to change the S3 bucket's tags
 violation[msg] {
