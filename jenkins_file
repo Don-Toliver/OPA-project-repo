@@ -39,9 +39,14 @@ pipeline {
         stage('Policy Check') {
             steps {
                 script {
-                    def policyCheck = sh(script: 'opa eval --data policy.rego --input tfplan.json "data.s3.access.allow"', returnStatus: true)
+                    // Run the OPA evaluation against the Terraform plan and OPA policy
+                    def policyCheck = sh(script: 'opa eval --data policy.rego --input tfplan.json "data.s3_policy.deny"', returnStatus: true)
+
+                    // If OPA policy violation is found, fail the build
                     if (policyCheck != 0) {
                         error("OPA policy violation detected. Failing the build.")
+                    } else {
+                        echo "OPA policy check passed."
                     }
                 }
             }
@@ -53,5 +58,6 @@ pipeline {
         }
     }
 }
+
 
 
