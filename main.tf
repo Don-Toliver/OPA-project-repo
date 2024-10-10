@@ -3,10 +3,10 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "example" {
-  bucket = "automation-cicd-pro-ap-south-1"
+  bucket = "my-secure-bucket-ap-south-1-cicd"
 
   tags = {
-    Name        = "automation-cicd-bucket-violation-check"
+    Name        = "my-secure-bucket-ap-south-1-cicd"
     Environment = "Test"
   }
 
