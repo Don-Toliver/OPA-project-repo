@@ -7,7 +7,7 @@ resource "aws_s3_bucket" "example" {
   
   # Add tags for the bucket
   tags = {
-    Name        = "automation-cicd-bucket"
+    Name        = "automation-cicd-bucket-final"
     Environment = "Test"
   }
 
